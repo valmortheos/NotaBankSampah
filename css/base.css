@@ -5,6 +5,14 @@
   padding: 0;
 }
 
+/* Debug visual rule - aktifkan jika membutuhkan penelusuran elemen */
+/* * { outline: 1px solid red; } */
+
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 :root {
   /* Color Palette - Light Theme */
   --color-bg: #f8fafc;

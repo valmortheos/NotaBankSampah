@@ -11,6 +11,7 @@
   flex-direction: column;
   gap: 1.25rem;
   position: relative;
+  min-width: 0;
 }
 
 /* Header Kop Nota */
@@ -21,12 +22,14 @@
   align-items: flex-start;
   padding-bottom: 1rem;
   border-bottom: 2px solid #000000;
+  min-width: 0;
 }
 
 .kop-brand {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
+  min-width: 0;
 }
 
 .kop-logo {
@@ -39,6 +42,7 @@
 .kop-text {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .kop-title {
@@ -80,6 +84,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 
 .transaction-badge.pemasukan {
@@ -100,12 +105,14 @@
   padding: 12px 16px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
+  min-width: 0;
 }
 
 .meta-item {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 .meta-item:last-child {
@@ -132,6 +139,8 @@
 .nota-table-wrapper {
   width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  min-width: 0;
 }
 
 .nota-table {
@@ -139,6 +148,7 @@
   border-collapse: collapse;
   table-layout: fixed;
   font-size: 0.8125rem;
+  min-width: 320px;
 }
 
 .nota-table th {
@@ -171,10 +181,6 @@
   text-align: left;
   word-break: break-word;
   overflow-wrap: break-word;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 .nota-table .col-qty {
@@ -236,6 +242,7 @@
   padding: 10px 12px;
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   font-size: 12px;
+  min-width: 0;
 }
 
 .notes-title {
@@ -249,14 +256,16 @@
   font-size: 12px;
   color: #713f12;
   white-space: pre-wrap;
+  word-break: break-word;
 }
 
 /* Signatures Area */
 .nota-signatures {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
+  gap: 0.5rem;
   margin-top: 0.5rem;
+  min-width: 0;
 }
 
 .sig-box {
@@ -264,6 +273,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
+  min-width: 0;
 }
 
 .sig-role {
@@ -272,11 +282,13 @@
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.025em;
+  white-space: nowrap;
 }
 
 .sig-img-container {
   height: 48px;
-  width: 120px;
+  width: 100%;
+  max-width: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -286,7 +298,7 @@
 
 .sig-img {
   max-height: 48px;
-  max-width: 120px;
+  max-width: 100%;
   object-fit: contain;
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -306,6 +318,7 @@
   font-size: 11px;
   color: var(--color-text-main);
   text-align: center;
+  white-space: nowrap;
 }
 
 /* Footer */
@@ -315,14 +328,13 @@
   padding-top: 0.75rem;
   font-size: 10px;
   color: var(--color-text-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  word-break: break-word;
+  min-width: 0;
 }
 
 @media (max-width: 640px) {
   .nota-card {
-    padding: 1.25rem;
+    padding: 1rem;
   }
 
   .nota-kop {
@@ -346,5 +358,6 @@
 
   .kop-title {
     white-space: normal;
+    font-size: 1.1rem;
   }
 }

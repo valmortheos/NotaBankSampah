@@ -46,19 +46,26 @@ Metadata merek, alamat, dan teks catatan kaki diatur secara eksternal pada file 
 2. Ubah properti di dalam objek `brand`, `address`, atau `footer`.
 3. Simpan file dan muat ulang halaman pada browser.
 
-## CARA KERJA NOMOR NOTA (NO. NOTA)
+## CARA KERJA NOMOR NOTA & PERSISTENSI DRAFT
 
-Format nomor nota secara otomatis disesuaikan menjadi:
+### Format Nomor Nota
+Format nomor nota disesuaikan menjadi:
 `<SLUG>/<YYYY>/<NNN>`
 
 - `<SLUG>`: Singkatan nama merek (misalnya `BSS` untuk Bank Sampah Saling).
 - `<YYYY>`: Tahun saat ini yang dihitung secara dinamis pada saat runtime (misalnya `2026`).
 - `<NNN>`: Nomor urut 3 digit berawalan nol (misalnya `001`).
 
-### Mekanisme Urutan & Penyimpanan:
-1. Pengguna hanya perlu menyunting nomor urut (sequence). Awalan prefix bersifat read-only.
-2. Nomor urut terakhir yang digunakan tersimpan secara otomatis pada `localStorage` browser.
-3. Tombol **Nota Baru** pada header akan menaikkan nomor urut secara otomatis (+1), menyimpannya ke `localStorage`, dan mengosongkan formulir untuk pembuat nota berikutnya.
+### Penyimpanan Urutan & Persistensi Draft Formulir:
+1. **Penyimpanan Nomor Urut (`bss.sequence`)**:
+   - Nomor urut tersimpan secara terpisah di `localStorage` agar tidak hilang saat halaman dimuat ulang.
+   - Tombol **Nota Baru** pada header menaikkan nomor urut (+1) dan mengosongkan draft formulir.
+2. **Penyimpanan Draft Formulir (`bss.draft`)**:
+   - Semua input form (tanggal, jenis transaksi, daftar item, catatan, dan toggle tanda tangan) disimpan secara otomatis ke `localStorage` (debounced 300ms).
+   - Memuat ulang halaman (reload) akan memulihkan Isian formulir persis seperti sebelum dimuat ulang.
+3. **Pembersihan Draft**:
+   - Menekan tombol **Nota Baru** atau tombol **Reset** akan menghapus kunci draft `bss.draft` dan mengembalikan isian formulir ke kondisi default.
+   - Anda juga dapat menghapus draft secara manual melalui DevTools browser (Application -> Local Storage -> hapus kunci `bss.draft`).
 
 ## STRUKTUR FOLDER
 
@@ -75,6 +82,7 @@ Format nomor nota secara otomatis disesuaikan menjadi:
 │   └── print.css         # @media print stylesheet (A4 format & manipulasi cetak)
 ├── js/
 │   ├── config.js         # Wrapper storage, helper format, fallback data
+│   ├── persistence.js    # Pengelolaan simpan/muat/hapus draft formulir ke storage
 │   ├── state.js          # Object state utama & reducer pengelolaan data nota
 │   ├── form.js           # Event binding input, tambah/hapus item, toggle tanda tangan
 │   ├── render.js         # Fungsi render real-time preview nota dari state

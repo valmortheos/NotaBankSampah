@@ -1,8 +1,17 @@
 /* Layout Utama App */
+.app-shell {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 .app-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 /* Header Navbar */
@@ -17,30 +26,36 @@
   top: 0;
   z-index: 100;
   box-shadow: var(--shadow-sm);
+  width: 100%;
+  min-width: 0;
 }
 
 .brand-section {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  min-width: 0;
 }
 
 .brand-logo-header {
   width: 36px;
   height: 36px;
   object-fit: contain;
+  flex-shrink: 0;
 }
 
 .brand-title {
   font-size: 1.125rem;
   font-weight: 700;
   color: var(--color-text-main);
+  white-space: nowrap;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .btn {
@@ -53,6 +68,7 @@
   font-weight: 600;
   font-size: 0.875rem;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .btn-outline-primary {
@@ -105,6 +121,7 @@
   margin: 0 auto;
   width: 100%;
   flex: 1;
+  min-width: 0;
 }
 
 .panel {
@@ -113,12 +130,14 @@
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   box-shadow: var(--shadow-sm);
+  min-width: 0;
 }
 
 .panel-editor {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  min-width: 0;
 }
 
 .panel-preview {
@@ -129,6 +148,8 @@
   border: none;
   box-shadow: none;
   padding: 0;
+  min-width: 0;
+  width: 100%;
 }
 
 .preview-title-bar {
@@ -152,6 +173,7 @@
   width: 100%;
   display: flex;
   justify-content: center;
+  min-width: 0;
 }
 
 /* Responsive Rules */
@@ -163,7 +185,12 @@
 
 @media (max-width: 639px) {
   .app-header {
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 0.5rem;
+    gap: 0.5rem;
+  }
+
+  .brand-title {
+    font-size: 1rem;
   }
 
   .btn .btn-text {
@@ -171,11 +198,21 @@
   }
 
   .btn {
-    padding: 0.5rem 0.75rem;
+    padding: 0.5rem;
+    min-width: 36px;
+    height: 36px;
+  }
+
+  .header-actions {
+    gap: 0.25rem;
   }
 
   .main-content {
-    padding: 1rem 0.75rem;
+    padding: 0.75rem 0.5rem;
     gap: 1rem;
+  }
+
+  .panel {
+    padding: 1rem 0.75rem;
   }
 }

@@ -1,5 +1,11 @@
 // Pengaturan dan konstanta global aplikasi Nota Digital
 
+// Storage Keys
+export const STORAGE_KEYS = {
+  sequence: 'bss.sequence',
+  draft: 'bss.draft'
+};
+
 // Wrapper defensif untuk akses localStorage
 export const safeGetStorage = (key, fallback) => {
   try {
@@ -15,6 +21,14 @@ export const safeSetStorage = (key, value) => {
     localStorage.setItem(key, value);
   } catch (err) {
     // Membiarkan kegagalan penyimpanan secara senyap jika storage diblokir
+  }
+};
+
+export const safeRemoveStorage = (key) => {
+  try {
+    localStorage.removeItem(key);
+  } catch (err) {
+    // Membiarkan kegagalan secara senyap
   }
 };
 
