@@ -1,10 +1,11 @@
 // Form Binding & Event Listeners Editor
 
 import { store } from './state.js';
-import { APP_CONFIG } from './config.js';
+import { APP_CONFIG, getBrandSlug } from './config.js';
 
 export function initForm() {
-  const notaNoInput = document.getElementById('input-nota-no');
+  const notaSeqInput = document.getElementById('input-nota-seq');
+  const notaPrefixLabel = document.getElementById('label-nota-prefix');
   const dateInput = document.getElementById('input-date');
   const typeOptions = document.querySelectorAll('.segmented-option');
   const itemsContainer = document.getElementById('items-editor-list');
@@ -13,14 +14,25 @@ export function initForm() {
 
   // Sync state ke form awal
   const state = store.getState();
-  if (notaNoInput) notaNoInput.value = state.notaNo;
+  const currentYear = new Date().getFullYear();
+  const brandSlug = getBrandSlug(state.company?.brand?.name);
+
+  if (notaPrefixLabel) {
+    notaPrefixLabel.textContent = `${brandSlug}/${currentYear}/`;
+  }
+  if (notaSeqInput) {
+    notaSeqInput.value = state.sequence;
+  }
   if (dateInput) dateInput.value = state.date;
   if (notesInput) notesInput.value = state.notes;
 
-  // Header meta inputs
-  if (notaNoInput) {
-    notaNoInput.addEventListener('input', (e) => {
-      store.dispatch({ type: 'SET_FIELD', field: 'notaNo', value: e.target.value });
+  // Listeners input sequence
+  if (notaSeqInput) {
+    notaSeqInput.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value, 10);
+      if (!isNaN(val) && val > 0) {
+        store.dispatch({ type: 'SET_SEQUENCE', value: val });
+      }
     });
   }
 
@@ -65,10 +77,15 @@ export function initForm() {
     }
   });
 
-  // Subscribe update untuk sync UI form saat Reset
+  // Subscribe update untuk sync UI form saat state berubah
   store.subscribe((newState) => {
-    if (notaNoInput && notaNoInput.value !== newState.notaNo) {
-      notaNoInput.value = newState.notaNo;
+    const yr = new Date().getFullYear();
+    const slug = getBrandSlug(newState.company?.brand?.name);
+    if (notaPrefixLabel) {
+      notaPrefixLabel.textContent = `${slug}/${yr}/`;
+    }
+    if (notaSeqInput && Number(notaSeqInput.value) !== newState.sequence) {
+      notaSeqInput.value = newState.sequence;
     }
     if (dateInput && dateInput.value !== newState.date) {
       dateInput.value = newState.date;

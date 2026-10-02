@@ -1,11 +1,73 @@
-// Konstanta dan konfigurasi global aplikasi Nota Digital
+// Pengaturan dan konstanta global aplikasi Nota Digital
+
+// Wrapper defensif untuk akses localStorage
+export const safeGetStorage = (key, fallback) => {
+  try {
+    const val = localStorage.getItem(key);
+    return val !== null ? val : fallback;
+  } catch (err) {
+    return fallback;
+  }
+};
+
+export const safeSetStorage = (key, value) => {
+  try {
+    localStorage.setItem(key, value);
+  } catch (err) {
+    // Membiarkan kegagalan penyimpanan secara senyap jika storage diblokir
+  }
+};
+
+// Fallback data perusahaan jika fetch data/company.json gagal
+export const FALLBACK_COMPANY = {
+  brand: {
+    name: "Bank Sampah Saling",
+    tagline: "Unit Pengolahan & Daur Ulang",
+    address: {
+      street: "Jl. Merdeka No. 45",
+      kelurahan: "Kel. Sukamaju",
+      kecamatan: "Kec. Cibeunying",
+      city: "Bandung",
+      postalCode: "40123"
+    },
+    footer: "Terima kasih telah berkontribusi dalam menjaga kelestarian lingkungan."
+  }
+};
+
+// Helper membuat slug brand (misal: Bank Sampah Saling -> BSS)
+export const getBrandSlug = (brandName) => {
+  if (!brandName) return 'BSS';
+  const words = brandName.trim().split(/\s+/);
+  if (words.length === 1) {
+    return words[0].slice(0, 3).toUpperCase();
+  }
+  return words.map(w => w[0]).join('').toUpperCase();
+};
+
+// Helper format alamat perusahaan menjadi string multi-baris
+export const formatAddressLines = (addressObj) => {
+  if (!addressObj) return '';
+  if (typeof addressObj === 'string') return addressObj;
+
+  const parts = [];
+  if (addressObj.street) parts.push(addressObj.street);
+  const kelKec = [addressObj.kelurahan, addressObj.kecamatan].filter(Boolean).join(', ');
+  if (kelKec) parts.push(kelKec);
+  const cityPostal = [addressObj.city, addressObj.postalCode].filter(Boolean).join(' ');
+  if (cityPostal) parts.push(cityPostal);
+
+  return parts.join('<br>');
+};
+
+// Helper format sequence angka menjadi 3 digit berawalan nol (001, 002, dst)
+export const formatSequenceNumber = (seq) => {
+  const num = parseInt(seq, 10);
+  if (isNaN(num) || num < 1) return '001';
+  return String(num).padStart(3, '0');
+};
 
 export const APP_CONFIG = {
-  BRAND_NAME: 'Bank Sampah Saling',
-  BRAND_SUBTITLE: 'Unit Pengolahan & Daur Ulang',
-  BRAND_ADDRESS: 'Jl. Merdeka No. 45, Kel. Sukamaju, Kec. Cibeunying, Bandung 40123',
   BRAND_LOGO: 'assets/logo.png',
-  FOOTER_TEXT: 'Terima kasih telah berkontribusi dalam menjaga kelestarian lingkungan.',
 
   TRANSACTION_TYPES: {
     INCOME: 'pemasukan',
@@ -43,7 +105,7 @@ export const formatRupiah = (amount) => {
   }).format(value);
 };
 
-// Formatter Tanggal Format Indonesia (misal: 24 Mei 2024)
+// Formatter Tanggal Format Indonesia
 export const formatDateIndonesian = (dateString) => {
   if (!dateString) return '-';
   const date = new Date(dateString);
@@ -54,15 +116,6 @@ export const formatDateIndonesian = (dateString) => {
     month: 'long',
     year: 'numeric'
   }).format(date);
-};
-
-// Helper Generate Nomor Nota Default
-export const generateDefaultNotaNo = () => {
-  const date = new Date();
-  const year = date.getFullYear().toString().slice(-2);
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const random = String(Math.floor(Math.random() * 900) + 100);
-  return `NOTA-${year}${month}-${random}`;
 };
 
 // Helper Get Tanggal Hari Ini (YYYY-MM-DD)
