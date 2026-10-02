@@ -1,0 +1,75 @@
+/* Stylesheet untuk Cetak / Print A4 */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+
+  /* Reset layout dasar */
+  body, html {
+    background: #ffffff !important;
+    color: #000000 !important;
+    width: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Sembunyikan elemen non-print */
+  .app-header,
+  .panel-editor,
+  .preview-title-bar,
+  .toast,
+  .btn,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Unset grid container */
+  .app-container, .main-content, .panel-preview {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+
+  /* Card Nota Full Width Tanpa Box Shadow/Border */
+  .nota-card {
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+
+  /* Paksa tabel fixed layout & tanpa text wrap pada kolom nominal */
+  .nota-table {
+    table-layout: fixed !important;
+    width: 100% !important;
+  }
+
+  .nota-table th,
+  .nota-table td {
+    white-space: nowrap !important;
+  }
+
+  /* Pengecualian wrap untuk deskripsi item */
+  .nota-table td.col-item {
+    white-space: normal !important;
+    word-break: break-word !important;
+  }
+
+  /* Paksa Opacity Tanda Tangan Aktif = 1 */
+  .sig-box.active .sig-img {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  .sig-box:not(.active) .sig-img {
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+}
