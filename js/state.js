@@ -1,10 +1,24 @@
-// Pengelolaan State Aplikasi & Reducer
+// Pengelolaan State Aplikasi & Reducer Store
 
-import { APP_CONFIG, generateDefaultNotaNo, getTodayDateString } from './config.js';
+import {
+  APP_CONFIG,
+  FALLBACK_COMPANY,
+  getTodayDateString,
+  safeGetStorage,
+  safeSetStorage
+} from './config.js';
 
-// Initial State Constructor
-export const createInitialState = () => ({
-  notaNo: generateDefaultNotaNo(),
+// Load sequence dari storage dengan fallback 1
+const getInitialSequence = () => {
+  const saved = safeGetStorage('nota_sequence', '1');
+  const num = parseInt(saved, 10);
+  return isNaN(num) || num < 1 ? 1 : num;
+};
+
+// Constructor state awal
+export const createInitialState = (existingCompany = null) => ({
+  company: existingCompany || FALLBACK_COMPANY,
+  sequence: getInitialSequence(),
   date: getTodayDateString(),
   type: APP_CONFIG.TRANSACTION_TYPES.INCOME,
   items: [...APP_CONFIG.DEFAULT_ITEMS],
@@ -43,9 +57,18 @@ class Store {
   }
 }
 
-// Reducer Sederhana
+// Reducer pengelolaan state
 function reducer(state, action) {
   switch (action.type) {
+    case 'SET_COMPANY':
+      return { ...state, company: action.value };
+
+    case 'SET_SEQUENCE': {
+      const newSeq = Math.max(1, parseInt(action.value, 10) || 1);
+      safeSetStorage('nota_sequence', String(newSeq));
+      return { ...state, sequence: newSeq };
+    }
+
     case 'SET_FIELD':
       return { ...state, [action.field]: action.value };
 
@@ -87,8 +110,17 @@ function reducer(state, action) {
         }
       };
 
+    case 'NEW_NOTE': {
+      const nextSeq = state.sequence + 1;
+      safeSetStorage('nota_sequence', String(nextSeq));
+      return {
+        ...createInitialState(state.company),
+        sequence: nextSeq
+      };
+    }
+
     case 'RESET':
-      return createInitialState();
+      return createInitialState(state.company);
 
     default:
       return state;

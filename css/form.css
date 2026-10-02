@@ -17,6 +17,38 @@
   color: var(--color-text-main);
 }
 
+.nota-number-group {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  overflow: hidden;
+}
+
+.nota-prefix {
+  background-color: var(--color-surface-hover);
+  padding: 0.5rem 0.625rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  color: var(--color-text-muted);
+  border-right: 1px solid var(--color-border);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.input-seq {
+  border: none;
+  border-radius: 0;
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.input-seq:focus {
+  box-shadow: none;
+}
+
 .form-input, .form-textarea {
   width: 100%;
   padding: 0.5rem 0.75rem;
@@ -86,6 +118,11 @@
   color: var(--color-text-main);
   text-transform: uppercase;
   letter-spacing: 0.025em;
+}
+
+.btn-add-item {
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
 }
 
 .items-list {

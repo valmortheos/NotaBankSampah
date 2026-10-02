@@ -5,29 +5,72 @@
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: 2.25rem 2.5rem;
+  padding: 2rem 2.25rem;
   box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
+  position: relative;
 }
 
 /* Header Kop Nota */
 .nota-kop {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding-bottom: 1.25rem;
-  border-bottom: 2px solid var(--color-text-main);
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #000000;
 }
 
-.kop-brand { display: flex; align-items: center; gap: 1rem; }
-.kop-logo { width: 64px; height: 64px; object-fit: contain; }
-.kop-text { display: flex; flex-direction: column; }
-.kop-title { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; color: var(--color-text-main); text-transform: uppercase; }
-.kop-subtitle { font-size: 0.8125rem; font-weight: 600; color: var(--color-primary); }
-.kop-address { font-size: 0.75rem; color: var(--color-text-muted); margin-top: 0.25rem; max-width: 320px; line-height: 1.3; }
-.kop-badge-wrapper { text-align: right; }
+.kop-brand {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.kop-logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.kop-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.kop-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--color-text-main);
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.kop-subtitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-top: 2px;
+}
+
+.kop-address {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+  line-height: 1.35;
+  white-space: normal;
+}
+
+.kop-badge-wrapper {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
 
 .transaction-badge {
   display: inline-block;
@@ -38,61 +81,270 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
-.transaction-badge.pemasukan { background-color: var(--color-income-bg); color: var(--color-income); }
-.transaction-badge.pengeluaran { background-color: var(--color-expense-bg); color: var(--color-expense); }
 
-/* Meta Data Nota */
+.transaction-badge.pemasukan {
+  background-color: var(--color-income-bg);
+  color: var(--color-income);
+}
+
+.transaction-badge.pengeluaran {
+  background-color: var(--color-expense-bg);
+  color: var(--color-expense);
+}
+
+/* Meta Data Box (No. Nota + Tanggal) */
 .nota-meta {
-  display: flex;
-  justify-content: space-between;
-  background-color: var(--color-bg);
-  padding: 0.875rem 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background-color: #f8fafc;
+  padding: 12px 16px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
-  font-size: 0.8125rem;
 }
-.meta-item { display: flex; gap: 0.5rem; }
-.meta-label { color: var(--color-text-muted); font-weight: 500; }
-.meta-value { font-weight: 700; font-family: var(--font-mono); color: var(--color-text-main); }
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.meta-item:last-child {
+  align-items: flex-end;
+}
+
+.meta-label {
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.meta-value {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--color-text-main);
+  white-space: nowrap;
+}
 
 /* Tabel Items */
-.nota-table-wrapper { width: 100%; overflow-x: auto; }
-.nota-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 0.8125rem; }
-.nota-table th { background-color: var(--color-bg); color: var(--color-text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; padding: 0.625rem 0.75rem; border-bottom: 1px solid var(--color-border); text-align: left; }
-.nota-table td { padding: 0.75rem; border-bottom: 1px solid var(--color-border); color: var(--color-text-main); }
+.nota-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
 
-.nota-table .col-no { width: 36px; text-align: center; }
-.nota-table .col-item { width: auto; }
-.nota-table .col-qty { width: 60px; text-align: center; }
-.nota-table .col-price { width: 110px; text-align: right; }
-.nota-table .col-total { width: 125px; text-align: right; }
-.cell-amount { font-family: var(--font-mono); }
+.nota-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.8125rem;
+}
 
-.nota-table tfoot td { border-bottom: none; padding: 0.5rem 0.75rem; }
-.nota-table tfoot tr.grand-total td { font-size: 0.9375rem; font-weight: 700; color: var(--color-primary); border-top: 2px dashed var(--color-border); padding-top: 0.75rem; }
+.nota-table th {
+  background-color: var(--color-bg);
+  color: var(--color-text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  white-space: nowrap;
+}
 
-/* Section Catatan & Signatures */
-.nota-notes { background-color: #fefce8; border-left: 3px solid #eab308; padding: 0.625rem 0.875rem; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 0.75rem; }
-.notes-title { font-weight: 700; color: #854d0e; margin-bottom: 0.125rem; }
-.notes-content { color: #713f12; white-space: pre-wrap; }
+.nota-table td {
+  padding: 10px 6px;
+  border-bottom: 1px solid #eef1f6;
+  color: var(--color-text-main);
+}
 
-.nota-signatures { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 0.5rem; }
-.sig-box { display: flex; flex-direction: column; align-items: center; text-align: center; font-size: 0.75rem; }
-.sig-title { color: var(--color-text-muted); font-weight: 500; }
-.sig-img-container { height: 60px; width: 100%; display: flex; align-items: center; justify-content: center; margin: 0.25rem 0; }
-.sig-img { max-height: 100%; max-width: 100%; object-fit: contain; opacity: 0; transition: opacity 0.2s ease; }
-.sig-box.active .sig-img { opacity: 1; }
-.sig-line { width: 80%; border-bottom: 1px solid var(--color-border-dark); margin-bottom: 0.25rem; }
-.sig-role { font-weight: 600; color: var(--color-text-main); }
+.nota-table .col-no {
+  width: 36px;
+  text-align: center;
+  color: var(--color-text-muted);
+}
 
-.nota-footer { text-align: center; border-top: 1px solid var(--color-border); padding-top: 0.875rem; font-size: 0.75rem; color: var(--color-text-light); }
+.nota-table .col-item {
+  width: auto;
+  text-align: left;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 
-@media (max-width: 639px) {
-  .nota-card { padding: 1.25rem; }
-  .kop-brand { gap: 0.5rem; }
-  .kop-logo { width: 48px; height: 48px; }
-  .kop-title { font-size: 1rem; }
-  .nota-table { font-size: 0.75rem; }
-  .nota-table .col-price { width: 85px; }
-  .nota-table .col-total { width: 95px; }
+.nota-table .col-qty {
+  width: 48px;
+  text-align: center;
+}
+
+.nota-table .col-price {
+  width: 92px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.nota-table .col-total {
+  width: 104px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.cell-amount {
+  font-family: var(--font-mono);
+}
+
+.empty-table-cell {
+  text-align: center;
+  color: var(--color-text-light);
+  padding: 1rem !important;
+}
+
+.nota-table tfoot td {
+  border-bottom: none;
+  padding: 8px 6px;
+}
+
+.nota-table tfoot tr.grand-total td {
+  border-top: 1px dashed var(--color-border-dark);
+  padding-top: 10px;
+}
+
+.total-label-cell {
+  text-align: right;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-main);
+}
+
+.total-value-cell {
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: #0f9d58;
+}
+
+/* Catatan Box */
+.nota-notes {
+  background-color: #fefce8;
+  border-left: 3px solid #f59e0b;
+  padding: 10px 12px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 12px;
+}
+
+.notes-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #854d0e;
+  margin-bottom: 2px;
+}
+
+.notes-content {
+  font-size: 12px;
+  color: #713f12;
+  white-space: pre-wrap;
+}
+
+/* Signatures Area */
+.nota-signatures {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.sig-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.sig-role {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.sig-img-container {
+  height: 48px;
+  width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+  margin-bottom: 24px;
+}
+
+.sig-img {
+  max-height: 48px;
+  max-width: 120px;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.sig-box.active .sig-img {
+  opacity: 1;
+}
+
+.sig-line {
+  width: 100%;
+  border-bottom: 1px solid #cbd5e1;
+  margin-bottom: 4px;
+}
+
+.sig-placeholder {
+  font-size: 11px;
+  color: var(--color-text-main);
+  text-align: center;
+}
+
+/* Footer */
+.nota-footer {
+  text-align: center;
+  border-top: 1px solid var(--color-border);
+  padding-top: 0.75rem;
+  font-size: 10px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 640px) {
+  .nota-card {
+    padding: 1.25rem;
+  }
+
+  .nota-kop {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .kop-badge-wrapper {
+    position: static;
+    align-self: flex-start;
+  }
+
+  .nota-meta {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .meta-item:last-child {
+    align-items: flex-start;
+  }
+
+  .kop-title {
+    white-space: normal;
+  }
 }

@@ -1,0 +1,14 @@
+{
+  "brand": {
+    "name": "Bank Sampah Saling",
+    "tagline": "Unit Pengolahan & Daur Ulang",
+    "address": {
+      "street": "Jl. Merdeka No. 45",
+      "kelurahan": "Kel. Sukamaju",
+      "kecamatan": "Kec. Cibeunying",
+      "city": "Bandung",
+      "postalCode": "40123"
+    },
+    "footer": "Terima kasih telah berkontribusi dalam menjaga kelestarian lingkungan."
+  }
+}
