@@ -27,6 +27,7 @@
   justify-content: space-between;
   gap: 0.75rem;
   height: var(--header-offset);
+  overflow: hidden;
   padding: env(safe-area-inset-top, 0px) max(1rem, env(safe-area-inset-right, 0px)) 0 max(1rem, env(safe-area-inset-left, 0px));
   background-color: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
@@ -127,6 +128,7 @@
 }
 
 .header-actions .btn {
+  min-width: 0;
   flex-direction: column;
   gap: 0.125rem;
   min-height: 3rem;
@@ -258,6 +260,7 @@
 @media (min-width: 768px) {
   .header-actions {
     position: static;
+    flex-shrink: 1;
     display: flex;
     gap: 0.5rem;
     padding: 0;

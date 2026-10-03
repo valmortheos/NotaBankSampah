@@ -106,6 +106,9 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
   font-family: var(--font-mono);
   font-weight: 600;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60%;
 }
 
 .nota-number-group .form-input,
@@ -314,5 +317,29 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
   .form-textarea {
     min-height: 2.5rem;
     font-size: 0.9375rem;
+  }
+}
+
+
+/* Sangat sempit: jangan biarkan kontrol numerik atau label memaksa lebar halaman. */
+@media (max-width: 22rem) {
+  .item-row {
+    grid-template-columns: minmax(0, 5rem) minmax(0, 1fr) 2.5rem;
+    padding: 0.625rem;
+  }
+
+  .btn-remove-item {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .nota-prefix,
+  .input-affix > span {
+    padding-inline: 0.5rem;
+    font-size: 0.8125rem;
+  }
+
+  .checkbox-label {
+    padding-inline: 0.75rem;
   }
 }

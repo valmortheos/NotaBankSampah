@@ -174,12 +174,13 @@
 
 .nota-table tbody tr {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr);
   grid-template-areas:
-    "item  item  item"
-    "qty   price total";
+    "item  item"
+    "qty   price"
+    "total total";
   column-gap: 0.5rem;
-  row-gap: 0.125rem;
+  row-gap: 0.25rem;
   padding: 0.75rem 0;
   border-bottom: 1px solid var(--color-border);
 }
@@ -222,14 +223,65 @@
 
 .nota-table .col-total {
   grid-area: total;
+  justify-self: end;
   text-align: right;
   font-weight: 600;
+  max-width: 100%;
 }
 
 .cell-amount {
   font-family: var(--font-mono);
   font-size: 0.8125rem;
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Nilai uang tidak boleh menjadi sumber overflow pada kartu nota sempit. */
+@container nota (max-width: 32.99rem) {
+  .nota-table .col-price,
+  .nota-table .col-total,
+  .nota-table .cell-amount {
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+}
+
+@media (max-width: 22rem) {
+  .nota-card {
+    padding: 0.875rem;
+    gap: 1rem;
+  }
+
+  .kop-brand {
+    gap: 0.625rem;
+  }
+
+  .kop-logo {
+    width: 2.625rem;
+    height: 2.625rem;
+  }
+
+  .kop-title {
+    font-size: 1rem;
+  }
+
+  .nota-meta {
+    padding-inline: 0.75rem;
+  }
+
+  .meta-item {
+    gap: 0.5rem;
+  }
+
+  .nota-table tbody tr {
+    column-gap: 0.375rem;
+  }
+
+  .nota-table .col-total {
+    justify-self: stretch;
+  }
 }
 
 .nota-table tbody td.empty-table-cell {
