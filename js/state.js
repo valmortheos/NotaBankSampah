@@ -3,14 +3,16 @@
 import {
   APP_CONFIG,
   FALLBACK_COMPANY,
+  STORAGE_KEYS,
   getTodayDateString,
   safeGetStorage,
   safeSetStorage
 } from './config.js';
+import { saveDraft, clearDraft } from './persistence.js';
 
 // Load sequence dari storage dengan fallback 1
 const getInitialSequence = () => {
-  const saved = safeGetStorage('nota_sequence', '1');
+  const saved = safeGetStorage(STORAGE_KEYS.sequence, '1');
   const num = parseInt(saved, 10);
   return isNaN(num) || num < 1 ? 1 : num;
 };
@@ -53,6 +55,7 @@ class Store {
 
   dispatch(action) {
     this.state = reducer(this.state, action);
+    saveDraft(this.state);
     this.notify();
   }
 }
@@ -60,12 +63,15 @@ class Store {
 // Reducer pengelolaan state
 function reducer(state, action) {
   switch (action.type) {
+    case 'HYDRATE_DRAFT':
+      return { ...state, ...action.value };
+
     case 'SET_COMPANY':
       return { ...state, company: action.value };
 
     case 'SET_SEQUENCE': {
       const newSeq = Math.max(1, parseInt(action.value, 10) || 1);
-      safeSetStorage('nota_sequence', String(newSeq));
+      safeSetStorage(STORAGE_KEYS.sequence, String(newSeq));
       return { ...state, sequence: newSeq };
     }
 
@@ -111,8 +117,9 @@ function reducer(state, action) {
       };
 
     case 'NEW_NOTE': {
+      clearDraft();
       const nextSeq = state.sequence + 1;
-      safeSetStorage('nota_sequence', String(nextSeq));
+      safeSetStorage(STORAGE_KEYS.sequence, String(nextSeq));
       return {
         ...createInitialState(state.company),
         sequence: nextSeq
@@ -120,6 +127,7 @@ function reducer(state, action) {
     }
 
     case 'RESET':
+      clearDraft();
       return createInitialState(state.company);
 
     default:

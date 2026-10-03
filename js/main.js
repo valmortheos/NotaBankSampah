@@ -6,6 +6,7 @@ import { renderNotaPreview } from './render.js';
 import { preloadSignatureImages } from './signature.js';
 import { exportToPng, triggerPrint } from './export.js';
 import { FALLBACK_COMPANY, getBrandSlug, formatSequenceNumber } from './config.js';
+import { loadDraft } from './persistence.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   const previewContainer = document.getElementById('preview-container');
@@ -27,6 +28,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch (err) {
     console.warn('Gagal memuat data/company.json, menggunakan data fallback:', err);
     store.dispatch({ type: 'SET_COMPANY', value: FALLBACK_COMPANY });
+  }
+
+  // Hydrate draft tersimpan dari localStorage sebelum render pertama
+  const savedDraft = loadDraft();
+  if (savedDraft) {
+    store.dispatch({ type: 'HYDRATE_DRAFT', value: savedDraft });
   }
 
   // Preload assets
