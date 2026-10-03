@@ -343,3 +343,58 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
     padding-inline: 0.75rem;
   }
 }
+
+/* Item editor refinement: every editable column has an explicit label. */
+.item-field-name {
+  grid-area: name;
+}
+
+.item-field-name .form-input {
+  min-width: 0;
+}
+
+.btn-add-item {
+  min-height: 2.75rem;
+  border-style: solid;
+  border-color: var(--color-primary);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.btn-add-item:hover {
+  border-color: var(--color-primary-hover);
+}
+
+.btn-remove-item {
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+}
+
+.btn-remove-item:hover {
+  border-color: var(--color-danger);
+}
+
+@media (min-width: 1024px) {
+  .item-row {
+    grid-template-columns: minmax(0, 1.5fr) minmax(5rem, 0.55fr) minmax(8rem, 0.9fr) minmax(8rem, 0.9fr) 2.5rem;
+    grid-template-areas: "name qty price sub remove";
+    align-items: end;
+  }
+
+  .item-subtotal {
+    align-items: flex-start;
+    padding-top: 0;
+    border-top: 0;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .item-subtotal-value {
+    text-align: left;
+  }
+
+  .btn-remove-item {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}

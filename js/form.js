@@ -148,8 +148,11 @@ function buildItemsEditor(items, container) {
     row.dataset.id = item.id;
 
     row.innerHTML = `
-      <input type="text" class="form-input item-name" placeholder="Nama item" aria-label="Nama item ${index + 1}" autocomplete="off" enterkeyhint="next" value="${escapeHtml(item.name)}">
-      <button type="button" class="btn-remove-item" aria-label="Hapus item ${index + 1}">
+      <label class="item-field item-field-name">
+        <span>Nama item</span>
+        <input type="text" class="form-input item-name" placeholder="Contoh: Kardus" aria-label="Nama item ${index + 1}" autocomplete="off" enterkeyhint="next" value="${escapeHtml(item.name)}">
+      </label>
+      <button type="button" class="btn-remove-item" aria-label="Hapus item ${index + 1}" title="Hapus item">
         <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
       </button>
       <label class="item-field item-field-qty">
