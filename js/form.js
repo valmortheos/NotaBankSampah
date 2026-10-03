@@ -1,7 +1,7 @@
 // Form Binding & Event Listeners Editor
 
 import { store } from './state.js';
-import { APP_CONFIG, getBrandSlug } from './config.js';
+import { APP_CONFIG, getBrandSlug, formatRupiah } from './config.js';
 
 export function initForm() {
   const notaSeqInput = document.getElementById('input-nota-seq');
@@ -43,12 +43,18 @@ export function initForm() {
   }
 
   // Segmented Control Transaksi
+  const markActiveType = (type) => {
+    typeOptions.forEach(opt => {
+      const isSelected = opt.getAttribute('data-type') === type;
+      opt.classList.toggle('active', isSelected);
+      opt.setAttribute('aria-pressed', String(isSelected));
+    });
+  };
+  markActiveType(state.type);
+
   typeOptions.forEach(opt => {
     opt.addEventListener('click', () => {
-      typeOptions.forEach(o => o.classList.remove('active'));
-      opt.classList.add('active');
-      const selectedType = opt.getAttribute('data-type');
-      store.dispatch({ type: 'SET_TYPE', value: selectedType });
+      store.dispatch({ type: 'SET_TYPE', value: opt.getAttribute('data-type') });
     });
   });
 
@@ -63,6 +69,10 @@ export function initForm() {
   if (btnAddItem) {
     btnAddItem.addEventListener('click', () => {
       store.dispatch({ type: 'ADD_ITEM' });
+      // Fokus ke nama item baru agar langsung bisa mengetik
+      const rows = itemsContainer.querySelectorAll('.item-row');
+      const lastRow = rows[rows.length - 1];
+      if (lastRow) lastRow.querySelector('.item-name').focus();
     });
   }
 
@@ -94,39 +104,69 @@ export function initForm() {
       notesInput.value = newState.notes;
     }
 
-    typeOptions.forEach(opt => {
-      const isSelected = opt.getAttribute('data-type') === newState.type;
-      opt.classList.toggle('active', isSelected);
-    });
+    markActiveType(newState.type);
 
     APP_CONFIG.SIGNATURE_KEYS.forEach(key => {
       const chk = document.getElementById(`chk-sig-${key}`);
       if (chk) chk.checked = newState.signatures[key];
     });
 
-    renderItemsEditor(newState.items, itemsContainer);
+    syncItemsEditor(newState.items, itemsContainer);
   });
 
   // Initial render item editor list
-  renderItemsEditor(state.items, itemsContainer);
+  syncItemsEditor(state.items, itemsContainer);
 }
 
-// Render dynamic rows item editor
-function renderItemsEditor(items, container) {
+// Editor item: baris hanya dibangun ulang saat daftar item berubah (tambah/hapus/ganti).
+// Ketikan biasa hanya memperbarui nilai di tempat, sehingga fokus dan keyboard HP tidak hilang.
+let renderedItemsKey = null;
+
+function syncItemsEditor(items, container) {
   if (!container) return;
+  const key = items.map(item => item.id).join(',');
+
+  if (key !== renderedItemsKey) {
+    buildItemsEditor(items, container);
+    renderedItemsKey = key;
+  } else {
+    updateItemRows(items, container);
+  }
+}
+
+function buildItemsEditor(items, container) {
   container.innerHTML = '';
 
-  items.forEach((item) => {
+  if (items.length === 0) {
+    container.innerHTML = '<p class="items-empty">Belum ada item. Ketuk Tambah item untuk memulai.</p>';
+    return;
+  }
+
+  items.forEach((item, index) => {
     const row = document.createElement('div');
     row.className = 'item-row';
+    row.dataset.id = item.id;
 
     row.innerHTML = `
-      <input type="text" class="form-input item-name" placeholder="Nama item" value="${escapeHtml(item.name)}">
-      <input type="number" class="form-input item-qty" min="1" value="${item.qty}">
-      <input type="number" class="form-input item-price" min="0" value="${item.price}">
-      <button type="button" class="btn-remove-item" title="Hapus Item">
-        <i class="fa-solid fa-trash-can"></i>
+      <input type="text" class="form-input item-name" placeholder="Nama item" aria-label="Nama item ${index + 1}" autocomplete="off" enterkeyhint="next" value="${escapeHtml(item.name)}">
+      <button type="button" class="btn-remove-item" aria-label="Hapus item ${index + 1}">
+        <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
       </button>
+      <label class="item-field item-field-qty">
+        <span>Qty</span>
+        <input type="number" class="form-input item-qty" min="0" step="any" inputmode="decimal" enterkeyhint="next" value="${item.qty}">
+      </label>
+      <label class="item-field item-field-price">
+        <span>Harga satuan</span>
+        <div class="input-affix">
+          <span aria-hidden="true">Rp</span>
+          <input type="number" class="form-input item-price" min="0" inputmode="numeric" enterkeyhint="done" value="${item.price}">
+        </div>
+      </label>
+      <div class="item-subtotal">
+        <span>Subtotal</span>
+        <output class="item-subtotal-value">${formatRupiah((item.qty || 0) * (item.price || 0))}</output>
+      </div>
     `;
 
     const nameInput = row.querySelector('.item-name');
@@ -146,11 +186,42 @@ function renderItemsEditor(items, container) {
       store.dispatch({ type: 'UPDATE_ITEM', id: item.id, field: 'price', value: Number(e.target.value) || 0 });
     });
 
+    // Pilih seluruh isi saat fokus agar angka 0 / 1 mudah diganti
+    [qtyInput, priceInput].forEach(input => {
+      input.addEventListener('focus', () => input.select());
+    });
+
     btnRemove.addEventListener('click', () => {
       store.dispatch({ type: 'REMOVE_ITEM', id: item.id });
     });
 
     container.appendChild(row);
+  });
+}
+
+function updateItemRows(items, container) {
+  items.forEach(item => {
+    const row = container.querySelector(`.item-row[data-id="${item.id}"]`);
+    if (!row) return;
+
+    const fields = [
+      ['.item-name', item.name],
+      ['.item-qty', item.qty],
+      ['.item-price', item.price]
+    ];
+
+    fields.forEach(([selector, value]) => {
+      const input = row.querySelector(selector);
+      // Jangan timpa kolom yang sedang diketik
+      if (input && document.activeElement !== input && input.value !== String(value)) {
+        input.value = value;
+      }
+    });
+
+    const subtotalEl = row.querySelector('.item-subtotal-value');
+    if (subtotalEl) {
+      subtotalEl.textContent = formatRupiah((item.qty || 0) * (item.price || 0));
+    }
   });
 }
 

@@ -15,7 +15,7 @@ export function renderNotaPreview(state, container) {
   const brand = state.company?.brand || {};
   const isIncome = state.type === APP_CONFIG.TRANSACTION_TYPES.INCOME;
   const badgeClass = isIncome ? 'pemasukan' : 'pengeluaran';
-  const badgeLabel = isIncome ? 'PEMASUKAN' : 'PENGELUARAN';
+  const badgeLabel = isIncome ? 'Pemasukan' : 'Pengeluaran';
 
   // Format No. Nota: <SLUG>/<YYYY>/<NNN>
   const brandSlug = getBrandSlug(brand.name);
@@ -47,17 +47,16 @@ export function renderNotaPreview(state, container) {
       <div class="sig-box ${isActive ? 'active' : ''}">
         <span class="sig-role">${roleTitle}</span>
         <div class="sig-img-container">
-          <img src="${assetPath}" alt="TDT ${roleTitle}" class="sig-img">
+          <img src="${assetPath}" alt="Tanda tangan ${roleTitle}" class="sig-img">
         </div>
         <div class="sig-line"></div>
-        <span class="sig-placeholder">( ................. )</span>
       </div>
     `;
   }).join('');
 
   const notesHtml = state.notes && state.notes.trim() !== '' ? `
     <div class="nota-notes">
-      <div class="notes-title">Catatan:</div>
+      <div class="notes-title">Catatan</div>
       <div class="notes-content">${escapeHtml(state.notes)}</div>
     </div>
   ` : '';
@@ -65,10 +64,10 @@ export function renderNotaPreview(state, container) {
   const addressFormatted = formatAddressLines(brand.address);
 
   container.innerHTML = `
-    <div class="nota-card" id="nota-card-element">
+    <div class="nota-card" id="nota-card-element" data-type="${badgeClass}">
       <div class="nota-kop">
         <div class="kop-brand">
-          <img src="${APP_CONFIG.BRAND_LOGO}" alt="${brand.name || 'Logo'}" class="kop-logo">
+          <img src="${APP_CONFIG.BRAND_LOGO}" alt="${escapeHtml(brand.name || 'Logo')}" class="kop-logo">
           <div class="kop-text">
             <span class="kop-title">${brand.name || ''}</span>
             <span class="kop-subtitle">${brand.tagline || ''}</span>
@@ -82,11 +81,11 @@ export function renderNotaPreview(state, container) {
 
       <div class="nota-meta">
         <div class="meta-item">
-          <span class="meta-label">NO. NOTA</span>
+          <span class="meta-label">No. nota</span>
           <span class="meta-value">${fullNotaNo}</span>
         </div>
         <div class="meta-item">
-          <span class="meta-label">TANGGAL</span>
+          <span class="meta-label">Tanggal</span>
           <span class="meta-value">${formatDateIndonesian(state.date)}</span>
         </div>
       </div>
@@ -95,11 +94,11 @@ export function renderNotaPreview(state, container) {
         <table class="nota-table">
           <thead>
             <tr>
-              <th class="col-no">NO</th>
-              <th class="col-item">DESKRIPSI ITEM</th>
-              <th class="col-qty">QTY</th>
-              <th class="col-price">HARGA</th>
-              <th class="col-total">JUMLAH</th>
+              <th class="col-no">No</th>
+              <th class="col-item">Deskripsi item</th>
+              <th class="col-qty">Qty</th>
+              <th class="col-price">Harga</th>
+              <th class="col-total">Jumlah</th>
             </tr>
           </thead>
           <tbody>
@@ -107,8 +106,8 @@ export function renderNotaPreview(state, container) {
           </tbody>
           <tfoot>
             <tr class="grand-total">
-              <td colspan="4" class="total-label-cell">TOTAL</td>
-              <td class="col-total cell-amount total-value-cell">${formatRupiah(subtotal)}</td>
+              <td colspan="3" class="total-label-cell">Total</td>
+              <td colspan="2" class="cell-amount total-value-cell">${formatRupiah(subtotal)}</td>
             </tr>
           </tfoot>
         </table>

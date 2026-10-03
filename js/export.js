@@ -1,52 +1,83 @@
 // Export Nota ke PNG via html2canvas & Trigger Print
+//
+// Ekspor tidak memotret kartu di layar. Kartu diklon ke host di luar layar
+// dengan lebar tetap (EXPORT_WIDTH) agar hasil selalu memakai layout tabel penuh,
+// terlepas dari lebar layar perangkat.
 
 import { ensureImagesLoaded } from './signature.js';
 
-export function exportToPng(elementId, filename) {
-  const element = document.getElementById(elementId);
-  if (!element) {
+const EXPORT_WIDTH = 800;       // px, setara kertas A4 pada 96 dpi
+const MAX_SCALE = 3;
+const MAX_PIXELS = 12_000_000;  // aman untuk batas canvas iOS/Android
+
+export async function exportToPng(elementId, filename) {
+  const source = document.getElementById(elementId);
+  if (!source) {
     alert('Elemen nota tidak ditemukan.');
     return;
   }
 
-  // Preload semua gambar
-  ensureImagesLoaded(element).then(() => {
-    // Pakai html2canvas (global dari CDN)
-    if (typeof window.html2canvas !== 'function') {
-      alert('Library html2canvas belum siap. Pastikan koneksi internet aktif.');
-      return;
-    }
+  if (typeof window.html2canvas !== 'function') {
+    alert('Library html2canvas belum siap. Pastikan koneksi internet aktif.');
+    return;
+  }
 
-    window.html2canvas(element, {
-      scale: 2, // Scale 2x untuk retina display / high DPI
+  const host = document.createElement('div');
+  host.className = 'nota-export-host';
+  host.setAttribute('aria-hidden', 'true');
+
+  const stage = document.createElement('div');
+  stage.className = 'nota-stage';
+
+  const clone = source.cloneNode(true);
+  clone.removeAttribute('id');
+
+  stage.appendChild(clone);
+  host.appendChild(stage);
+  document.body.appendChild(host);
+
+  try {
+    await ensureImagesLoaded(clone);
+    if (document.fonts && document.fonts.ready) await document.fonts.ready;
+
+    const rect = clone.getBoundingClientRect();
+    const area = Math.max(1, rect.width * rect.height);
+    const scale = Math.max(1, Math.min(MAX_SCALE, Math.sqrt(MAX_PIXELS / area)));
+
+    const canvas = await window.html2canvas(clone, {
+      scale,
+      width: EXPORT_WIDTH,
+      windowWidth: EXPORT_WIDTH,
       backgroundColor: '#ffffff',
       useCORS: true,
       logging: false,
       onclone: (clonedDoc) => {
-        // Force opacity 1 pada signature aktif di DOM kloning
-        const activeSigs = clonedDoc.querySelectorAll('.sig-box.active .sig-img');
-        activeSigs.forEach(img => {
-          img.style.opacity = '1';
-          img.style.visibility = 'visible';
-        });
-
-        // Ensure table layout fixed & cell nowrap in canvas clone
-        const table = clonedDoc.querySelector('.nota-table');
-        if (table) {
-          table.style.tableLayout = 'fixed';
-          table.style.width = '100%';
+        // Host ada di luar layar; pindahkan ke origin pada dokumen kloning
+        const clonedHost = clonedDoc.querySelector('.nota-export-host');
+        if (clonedHost) {
+          clonedHost.style.left = '0';
+          clonedHost.style.top = '0';
         }
       }
-    }).then(canvas => {
-      const link = document.createElement('a');
-      link.download = filename || 'Nota.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    }).catch(err => {
-      console.error('Gagal mengeksport nota ke PNG:', err);
-      alert('Terjadi kesalahan saat mengunduh gambar nota.');
     });
-  });
+
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+    if (!blob) throw new Error('Canvas tidak dapat dikonversi ke PNG.');
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.download = filename || 'Nota.png';
+    link.href = url;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  } catch (err) {
+    console.error('Gagal mengeksport nota ke PNG:', err);
+    alert('Terjadi kesalahan saat mengunduh gambar nota.');
+  } finally {
+    host.remove();
+  }
 }
 
 export function triggerPrint() {

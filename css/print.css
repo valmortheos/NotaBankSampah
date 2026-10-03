@@ -1,21 +1,29 @@
-/* Stylesheet untuk Cetak / Print A4 */
+/* Cetak / simpan PDF: A4 portrait.
+   Lebar konten ~186mm sehingga layout tabel penuh dari container query ikut aktif. */
 @media print {
   @page {
     size: A4 portrait;
     margin: 12mm;
   }
 
-  /* Reset layout dasar */
-  body, html {
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  html, body {
     background: #ffffff !important;
     color: #000000 !important;
-    width: 100%;
+    width: 100% !important;
+    min-height: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
   }
 
-  /* Sembunyikan elemen non-print */
+  /* Elemen non-cetak */
   .app-header,
+  .header-actions,
+  .view-tabs,
   .panel-editor,
   .preview-title-bar,
   .toast,
@@ -24,52 +32,50 @@
     display: none !important;
   }
 
-  /* Unset grid container */
-  .app-container, .main-content, .panel-preview {
+  /* Lepas grid, sticky, dan batas tinggi layar */
+  .app-shell {
+    overflow: visible !important;
+  }
+
+  .app-container,
+  .main-content,
+  .panel.panel-preview {
     display: block !important;
+    position: static !important;
     width: 100% !important;
     max-width: 100% !important;
+    max-height: none !important;
     margin: 0 !important;
     padding: 0 !important;
+    overflow: visible !important;
     background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
-  /* Card Nota Full Width Tanpa Box Shadow/Border */
   .nota-card {
-    box-shadow: none !important;
-    border: none !important;
-    border-radius: 0 !important;
     max-width: 100% !important;
-    width: 100% !important;
     padding: 0 !important;
     background: #ffffff !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
   }
 
-  /* Paksa tabel fixed layout */
-  .nota-table {
-    table-layout: fixed !important;
-    width: 100% !important;
+  /* Hindari terpotong di tengah halaman */
+  .nota-table thead { display: table-header-group; }
+  .nota-table tr,
+  .nota-notes,
+  .nota-signatures,
+  .nota-footer,
+  .nota-meta {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
-  .nota-table th,
-  .nota-table td {
-    white-space: nowrap !important;
-  }
+  .nota-kop { break-after: avoid; }
 
-  /* Pengecualian wrap untuk deskripsi item */
-  .nota-table td.col-item {
-    white-space: normal !important;
-    word-break: break-word !important;
-  }
-
-  /* Paksa Opacity Tanda Tangan Aktif = 1 */
-  .sig-box.active .sig-img {
-    opacity: 1 !important;
-    visibility: visible !important;
-  }
-
-  .sig-box:not(.active) .sig-img {
-    opacity: 0 !important;
-    visibility: hidden !important;
-  }
+  /* Tanda tangan aktif selalu tampil */
+  .sig-box.active .sig-img { visibility: visible !important; }
+  .sig-box:not(.active) .sig-img { visibility: hidden !important; }
 }

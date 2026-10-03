@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnReset = document.getElementById('btn-reset');
   const btnDownload = document.getElementById('btn-download');
   const btnPrint = document.getElementById('btn-print');
+  const mainContent = document.querySelector('.main-content');
+  const viewTabs = document.querySelectorAll('.view-tab');
 
   // Load external JSON company config
   try {
@@ -50,6 +52,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderNotaPreview(state, previewContainer);
   });
 
+  // Tab Isi nota / Pratinjau (mobile & tablet; di desktop tab disembunyikan CSS)
+  const setView = (view) => {
+    if (!mainContent) return;
+    mainContent.dataset.view = view;
+    viewTabs.forEach(tab => {
+      const isActive = tab.dataset.view === view;
+      tab.classList.toggle('active', isActive);
+      tab.setAttribute('aria-pressed', String(isActive));
+    });
+    window.scrollTo({ top: 0 });
+  };
+
+  viewTabs.forEach(tab => {
+    tab.addEventListener('click', () => setView(tab.dataset.view));
+  });
+
   // Action Nota Baru (Increment sequence & reset form)
   if (btnNewNote) {
     btnNewNote.addEventListener('click', () => {
@@ -68,14 +86,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Action Unduh PNG
   if (btnDownload) {
-    btnDownload.addEventListener('click', () => {
+    btnDownload.addEventListener('click', async () => {
       const state = store.getState();
       const currentYear = new Date().getFullYear();
       const slug = getBrandSlug(state.company?.brand?.name);
       const seqFormatted = formatSequenceNumber(state.sequence);
       const notaNoClean = `${slug}_${currentYear}_${seqFormatted}`;
       const filename = `Nota-${notaNoClean}.png`;
-      exportToPng('nota-card-element', filename);
+      btnDownload.disabled = true;
+      btnDownload.setAttribute('aria-busy', 'true');
+      try {
+        await exportToPng('nota-card-element', filename);
+      } finally {
+        btnDownload.disabled = false;
+        btnDownload.removeAttribute('aria-busy');
+      }
     });
   }
 
