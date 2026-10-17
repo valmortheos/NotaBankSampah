@@ -431,7 +431,17 @@
     gap: 0.125rem;
   }
 
-  .meta-item:last-child { align-items: flex-end; }
+  .meta-item:nth-child(even) {
+    align-items: flex-end;
+  }
+
+  .meta-item:nth-child(even) .meta-value {
+    text-align: right;
+  }
+
+  .meta-item:nth-child(odd) .meta-value {
+    text-align: left;
+  }
 
   .nota-table {
     display: table;
