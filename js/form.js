@@ -8,31 +8,25 @@ export function initForm() {
   const notaPrefixLabel = document.getElementById('label-nota-prefix');
   const dateInput = document.getElementById('input-date');
   const typeOptions = document.querySelectorAll('.segmented-option');
+  const submittedByInput = document.getElementById('input-submitted-by');
   const itemsContainer = document.getElementById('items-editor-list');
   const btnAddItem = document.getElementById('btn-add-item');
   const notesInput = document.getElementById('input-notes');
 
-  // Sync state ke form awal
   const state = store.getState();
-  const currentYear = new Date().getFullYear();
-  const brandSlug = getBrandSlug(state.company?.brand?.name);
+  const yr = new Date().getFullYear();
+  const slug = getBrandSlug(state.company?.brand?.name);
 
-  if (notaPrefixLabel) {
-    notaPrefixLabel.textContent = `${brandSlug}/${currentYear}/`;
-  }
-  if (notaSeqInput) {
-    notaSeqInput.value = state.sequence;
-  }
+  if (notaPrefixLabel) notaPrefixLabel.textContent = `${slug}/${yr}/`;
+  if (notaSeqInput) notaSeqInput.value = state.sequence;
   if (dateInput) dateInput.value = state.date;
+  if (submittedByInput) submittedByInput.value = state.submittedBy || '';
   if (notesInput) notesInput.value = state.notes;
 
-  // Listeners input sequence
   if (notaSeqInput) {
     notaSeqInput.addEventListener('input', (e) => {
       const val = parseInt(e.target.value, 10);
-      if (!isNaN(val) && val > 0) {
-        store.dispatch({ type: 'SET_SEQUENCE', value: val });
-      }
+      if (!isNaN(val) && val > 0) store.dispatch({ type: 'SET_SEQUENCE', value: val });
     });
   }
 
@@ -42,12 +36,17 @@ export function initForm() {
     });
   }
 
-  // Segmented Control Transaksi
+  if (submittedByInput) {
+    submittedByInput.addEventListener('input', (e) => {
+      store.dispatch({ type: 'SET_FIELD', field: 'submittedBy', value: e.target.value });
+    });
+  }
+
   const markActiveType = (type) => {
     typeOptions.forEach(opt => {
-      const isSelected = opt.getAttribute('data-type') === type;
-      opt.classList.toggle('active', isSelected);
-      opt.setAttribute('aria-pressed', String(isSelected));
+      const isSel = opt.getAttribute('data-type') === type;
+      opt.classList.toggle('active', isSel);
+      opt.setAttribute('aria-pressed', String(isSel));
     });
   };
   markActiveType(state.type);
@@ -58,25 +57,21 @@ export function initForm() {
     });
   });
 
-  // Notes Textarea
   if (notesInput) {
     notesInput.addEventListener('input', (e) => {
       store.dispatch({ type: 'SET_FIELD', field: 'notes', value: e.target.value });
     });
   }
 
-  // Tambah Item Baris Baru
   if (btnAddItem) {
     btnAddItem.addEventListener('click', () => {
       store.dispatch({ type: 'ADD_ITEM' });
-      // Fokus ke nama item baru agar langsung bisa mengetik
       const rows = itemsContainer.querySelectorAll('.item-row');
       const lastRow = rows[rows.length - 1];
       if (lastRow) lastRow.querySelector('.item-name').focus();
     });
   }
 
-  // Signature Toggles
   APP_CONFIG.SIGNATURE_KEYS.forEach(key => {
     const chk = document.getElementById(`chk-sig-${key}`);
     if (chk) {
@@ -87,22 +82,16 @@ export function initForm() {
     }
   });
 
-  // Subscribe update untuk sync UI form saat state berubah
   store.subscribe((newState) => {
-    const yr = new Date().getFullYear();
-    const slug = getBrandSlug(newState.company?.brand?.name);
-    if (notaPrefixLabel) {
-      notaPrefixLabel.textContent = `${slug}/${yr}/`;
+    const currentYr = new Date().getFullYear();
+    const currentSlug = getBrandSlug(newState.company?.brand?.name);
+    if (notaPrefixLabel) notaPrefixLabel.textContent = `${currentSlug}/${currentYr}/`;
+    if (notaSeqInput && Number(notaSeqInput.value) !== newState.sequence) notaSeqInput.value = newState.sequence;
+    if (dateInput && dateInput.value !== newState.date) dateInput.value = newState.date;
+    if (submittedByInput && submittedByInput.value !== (newState.submittedBy || '')) {
+      submittedByInput.value = newState.submittedBy || '';
     }
-    if (notaSeqInput && Number(notaSeqInput.value) !== newState.sequence) {
-      notaSeqInput.value = newState.sequence;
-    }
-    if (dateInput && dateInput.value !== newState.date) {
-      dateInput.value = newState.date;
-    }
-    if (notesInput && notesInput.value !== newState.notes) {
-      notesInput.value = newState.notes;
-    }
+    if (notesInput && notesInput.value !== newState.notes) notesInput.value = newState.notes;
 
     markActiveType(newState.type);
 
@@ -114,18 +103,14 @@ export function initForm() {
     syncItemsEditor(newState.items, itemsContainer);
   });
 
-  // Initial render item editor list
   syncItemsEditor(state.items, itemsContainer);
 }
 
-// Editor item: baris hanya dibangun ulang saat daftar item berubah (tambah/hapus/ganti).
-// Ketikan biasa hanya memperbarui nilai di tempat, sehingga fokus dan keyboard HP tidak hilang.
 let renderedItemsKey = null;
 
 function syncItemsEditor(items, container) {
   if (!container) return;
   const key = items.map(item => item.id).join(',');
-
   if (key !== renderedItemsKey) {
     buildItemsEditor(items, container);
     renderedItemsKey = key;
@@ -136,7 +121,6 @@ function syncItemsEditor(items, container) {
 
 function buildItemsEditor(items, container) {
   container.innerHTML = '';
-
   if (items.length === 0) {
     container.innerHTML = '<p class="items-empty">Belum ada item. Ketuk Tambah item untuk memulai.</p>';
     return;
@@ -146,7 +130,6 @@ function buildItemsEditor(items, container) {
     const row = document.createElement('div');
     row.className = 'item-row';
     row.dataset.id = item.id;
-
     row.innerHTML = `
       <label class="item-field item-field-name">
         <span>Nama item</span>
@@ -177,26 +160,12 @@ function buildItemsEditor(items, container) {
     const priceInput = row.querySelector('.item-price');
     const btnRemove = row.querySelector('.btn-remove-item');
 
-    nameInput.addEventListener('input', (e) => {
-      store.dispatch({ type: 'UPDATE_ITEM', id: item.id, field: 'name', value: e.target.value });
-    });
+    nameInput.addEventListener('input', (e) => store.dispatch({ type: 'UPDATE_ITEM', id: item.id, field: 'name', value: e.target.value }));
+    qtyInput.addEventListener('input', (e) => store.dispatch({ type: 'UPDATE_ITEM', id: item.id, field: 'qty', value: Number(e.target.value) || 0 }));
+    priceInput.addEventListener('input', (e) => store.dispatch({ type: 'UPDATE_ITEM', id: item.id, field: 'price', value: Number(e.target.value) || 0 }));
 
-    qtyInput.addEventListener('input', (e) => {
-      store.dispatch({ type: 'UPDATE_ITEM', id: item.id, field: 'qty', value: Number(e.target.value) || 0 });
-    });
-
-    priceInput.addEventListener('input', (e) => {
-      store.dispatch({ type: 'UPDATE_ITEM', id: item.id, field: 'price', value: Number(e.target.value) || 0 });
-    });
-
-    // Pilih seluruh isi saat fokus agar angka 0 / 1 mudah diganti
-    [qtyInput, priceInput].forEach(input => {
-      input.addEventListener('focus', () => input.select());
-    });
-
-    btnRemove.addEventListener('click', () => {
-      store.dispatch({ type: 'REMOVE_ITEM', id: item.id });
-    });
+    [qtyInput, priceInput].forEach(input => input.addEventListener('focus', () => input.select()));
+    btnRemove.addEventListener('click', () => store.dispatch({ type: 'REMOVE_ITEM', id: item.id }));
 
     container.appendChild(row);
   });
@@ -207,24 +176,13 @@ function updateItemRows(items, container) {
     const row = container.querySelector(`.item-row[data-id="${item.id}"]`);
     if (!row) return;
 
-    const fields = [
-      ['.item-name', item.name],
-      ['.item-qty', item.qty],
-      ['.item-price', item.price]
-    ];
-
-    fields.forEach(([selector, value]) => {
-      const input = row.querySelector(selector);
-      // Jangan timpa kolom yang sedang diketik
-      if (input && document.activeElement !== input && input.value !== String(value)) {
-        input.value = value;
-      }
+    [['.item-name', item.name], ['.item-qty', item.qty], ['.item-price', item.price]].forEach(([sel, val]) => {
+      const input = row.querySelector(sel);
+      if (input && document.activeElement !== input && input.value !== String(val)) input.value = val;
     });
 
     const subtotalEl = row.querySelector('.item-subtotal-value');
-    if (subtotalEl) {
-      subtotalEl.textContent = formatRupiah((item.qty || 0) * (item.price || 0));
-    }
+    if (subtotalEl) subtotalEl.textContent = formatRupiah((item.qty || 0) * (item.price || 0));
   });
 }
 
