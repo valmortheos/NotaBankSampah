@@ -8,7 +8,7 @@ export function initForm() {
   const notaPrefixLabel = document.getElementById('label-nota-prefix');
   const dateInput = document.getElementById('input-date');
   const typeOptions = document.querySelectorAll('.segmented-option');
-  const submittedByInput = document.getElementById('input-submitted-by');
+  const printedByInput = document.getElementById('input-printed-by');
   const itemsContainer = document.getElementById('items-editor-list');
   const btnAddItem = document.getElementById('btn-add-item');
   const notesInput = document.getElementById('input-notes');
@@ -20,7 +20,7 @@ export function initForm() {
   if (notaPrefixLabel) notaPrefixLabel.textContent = `${slug}/${yr}/`;
   if (notaSeqInput) notaSeqInput.value = state.sequence;
   if (dateInput) dateInput.value = state.date;
-  if (submittedByInput) submittedByInput.value = state.submittedBy || '';
+  if (printedByInput) printedByInput.value = state.printedBy || '';
   if (notesInput) notesInput.value = state.notes;
 
   if (notaSeqInput) {
@@ -36,9 +36,9 @@ export function initForm() {
     });
   }
 
-  if (submittedByInput) {
-    submittedByInput.addEventListener('input', (e) => {
-      store.dispatch({ type: 'SET_FIELD', field: 'submittedBy', value: e.target.value });
+  if (printedByInput) {
+    printedByInput.addEventListener('input', (e) => {
+      store.dispatch({ type: 'SET_FIELD', field: 'printedBy', value: e.target.value });
     });
   }
 
@@ -88,8 +88,8 @@ export function initForm() {
     if (notaPrefixLabel) notaPrefixLabel.textContent = `${currentSlug}/${currentYr}/`;
     if (notaSeqInput && Number(notaSeqInput.value) !== newState.sequence) notaSeqInput.value = newState.sequence;
     if (dateInput && dateInput.value !== newState.date) dateInput.value = newState.date;
-    if (submittedByInput && submittedByInput.value !== (newState.submittedBy || '')) {
-      submittedByInput.value = newState.submittedBy || '';
+    if (printedByInput && printedByInput.value !== (newState.printedBy || '')) {
+      printedByInput.value = newState.printedBy || '';
     }
     if (notesInput && notesInput.value !== newState.notes) notesInput.value = newState.notes;
 

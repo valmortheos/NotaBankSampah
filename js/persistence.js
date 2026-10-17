@@ -23,7 +23,7 @@ export function saveDraft(state) {
       const draftData = {
         date: state.date,
         type: state.type,
-        submittedBy: state.submittedBy,
+        printedBy: state.printedBy,
         items: state.items,
         notes: state.notes,
         signatures: state.signatures
@@ -58,8 +58,10 @@ export function loadDraft() {
       validatedDraft.type = parsed.type;
     }
 
-    if (typeof parsed.submittedBy === 'string') {
-      validatedDraft.submittedBy = parsed.submittedBy;
+    if (typeof parsed.printedBy === 'string') {
+      validatedDraft.printedBy = parsed.printedBy;
+    } else if (typeof parsed.submittedBy === 'string') {
+      validatedDraft.printedBy = parsed.submittedBy;
     }
 
     if (Array.isArray(parsed.items)) {

@@ -63,10 +63,10 @@ export function renderNotaPreview(state, container) {
 
   const addressFormatted = formatAddressLines(brand.address);
 
-  const submittedByHtml = state.submittedBy && state.submittedBy.trim() !== '' ? `
+  const printedByHtml = state.printedBy && state.printedBy.trim() !== '' ? `
         <div class="meta-item">
-          <span class="meta-label">Diajukan oleh</span>
-          <span class="meta-value">${escapeHtml(state.submittedBy)}</span>
+          <span class="meta-label">Dicetak oleh</span>
+          <span class="meta-value">${escapeHtml(state.printedBy)}</span>
         </div>
   ` : '';
 
@@ -95,7 +95,7 @@ export function renderNotaPreview(state, container) {
           <span class="meta-label">Tanggal</span>
           <span class="meta-value">${formatDateIndonesian(state.date)}</span>
         </div>
-        ${submittedByHtml}
+        ${printedByHtml}
       </div>
 
       <div class="nota-table-wrapper">
