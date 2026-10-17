@@ -23,6 +23,7 @@ export const createInitialState = (existingCompany = null) => ({
   sequence: getInitialSequence(),
   date: getTodayDateString(),
   type: APP_CONFIG.TRANSACTION_TYPES.INCOME,
+  submittedBy: '',
   items: [...APP_CONFIG.DEFAULT_ITEMS],
   notes: 'Pembayaran tunai. Terima kasih.',
   signatures: {
